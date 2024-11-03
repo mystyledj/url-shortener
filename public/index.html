@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>URL Shortener</title>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>URL Shortener</h1>
+        <p>Effortlessly shorten your URLs and make them easy to share!</p>
+      </header>
+
+      <main>
+        <form id="url-form">
+          <input
+            type="url"
+            id="originalUrl"
+            placeholder="Enter your long URL here..."
+            required
+          />
+          <button type="submit">Shorten URL</button>
+        </form>
+
+        <div id="result" class="hidden">
+          <p>Here’s your shortened URL:</p>
+          <a href="#" id="shortenedUrl" target="_blank"></a>
+          <button onclick="copyToClipboard()">Copy Link</button>
+        </div>
+      </main>
+
+      <footer>
+        <p>&copy; 2024 URL Shortener | Simplify your links</p>
+      </footer>
+    </div>
+
+    <script>
+      document
+        .getElementById("url-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const originalUrl = document.getElementById("originalUrl").value;
+
+          const response = await fetch("/shorten", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ originalUrl }),
+          });
+
+          const data = await response.json();
+          document.getElementById("result").classList.remove("hidden");
+          document.getElementById("shortenedUrl").href = data.shortUrl;
+          document.getElementById("shortenedUrl").textContent = data.shortUrl;
+        });
+
+      function copyToClipboard() {
+        const urlField = document.getElementById("shortenedUrl");
+        navigator.clipboard.writeText(urlField.href).then(() => {
+          alert("Shortened URL copied to clipboard!");
+        });
+      }
+    </script>
+  </body>
+</html>
